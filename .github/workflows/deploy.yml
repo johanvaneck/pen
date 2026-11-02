@@ -46,3 +46,27 @@ jobs:
       - name: Deploy
         id: deployment
         uses: actions/deploy-pages@v4
+
+  https:
+    name: Enforce HTTPS
+    needs: deploy
+    runs-on: ubuntu-latest
+    timeout-minutes: 65
+    permissions:
+      pages: write
+    env:
+      GH_TOKEN: ${{ github.token }}
+    steps:
+      - name: Wait for certificate and require HTTPS
+        shell: bash
+        run: |
+          for attempt in $(seq 1 60); do
+            if gh api --method PUT "repos/${{ github.repository }}/pages" -F https_enforced=true; then
+              echo "HTTPS is enforced."
+              exit 0
+            fi
+            echo "Waiting for GitHub's TLS certificate (attempt $attempt/60)…"
+            sleep 60
+          done
+          echo "::error::GitHub's TLS certificate is still unavailable. Check the Pages custom-domain settings."
+          exit 1
