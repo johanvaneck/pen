@@ -7,6 +7,12 @@ export const MIN_ZOOM = 0.05;
 export const MAX_ZOOM = 16;
 export const PAPER = '#f7f6f2';
 
+// IDs are document-local, not credentials. getRandomValues also works on HTTP
+// (useful for local device testing before a domain's TLS is provisioned).
+export function newId(): string {
+  return crypto.randomUUID?.() ?? Array.from(crypto.getRandomValues(new Uint8Array(16)), n => n.toString(16).padStart(2, '0')).join('');
+}
+
 export function worldPoint(x: number, y: number, view: View) {
   return { x: (x - view.x) / view.zoom, y: (y - view.y) / view.zoom };
 }
@@ -54,7 +60,7 @@ export function parseDrawing(data: unknown): Drawing {
       if (!p || !finite(p.x) || !finite(p.y) || !finite(p.p, 1) || p.p < 0) throw new Error('Invalid stroke point.');
       return { x: p.x, y: p.y, p: p.p };
     });
-    return { id: crypto.randomUUID(), color: s.color, width: s.width, points, bounds: boundsOf(points, s.width) };
+    return { id: newId(), color: s.color, width: s.width, points, bounds: boundsOf(points, s.width) };
   });
   return { version: 1, strokes, view: { x: d.view.x, y: d.view.y, zoom: d.view.zoom } };
 }

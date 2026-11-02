@@ -4,7 +4,7 @@ import '@fontsource/dm-sans/latin-600.css';
 import '@fontsource/manrope/latin-500.css';
 import '@fontsource/manrope/latin-800.css';
 import './style.css';
-import { boundsOf, expandBounds, hitStroke, intersects, MAX_ZOOM, MIN_ZOOM, PAPER, parseDrawing, worldPoint, zoomAt } from './model';
+import { boundsOf, expandBounds, hitStroke, intersects, MAX_ZOOM, MIN_ZOOM, newId, PAPER, parseDrawing, worldPoint, zoomAt } from './model';
 import type { Drawing, Point, Stroke, View } from './model';
 import { load, save } from './storage';
 
@@ -234,7 +234,7 @@ canvas.addEventListener('pointerdown', (e) => {
     eraseBefore = strokes; erase(e);
   } else {
     const p = point(e);
-    active = { id: crypto.randomUUID(), color, width: size, points: [p], bounds: boundsOf([p], size) };
+    active = { id: newId(), color, width: size, points: [p], bounds: boundsOf([p], size) };
     invalidate();
   }
 });

@@ -1,5 +1,5 @@
-import { describe, expect, it } from 'vitest';
-import { boundsOf, hitStroke, intersects, MAX_ZOOM, MIN_ZOOM, parseDrawing, segmentDistance, worldPoint, zoomAt } from './model';
+import { describe, expect, it, vi } from 'vitest';
+import { boundsOf, hitStroke, intersects, MAX_ZOOM, MIN_ZOOM, newId, parseDrawing, segmentDistance, worldPoint, zoomAt } from './model';
 import type { Stroke } from './model';
 
 const points = [{ x: 0, y: 0, p: .5 }, { x: 100, y: 0, p: 1 }];
@@ -30,6 +30,16 @@ describe('infinite canvas geometry', () => {
     expect(hitStroke(stroke, { x: 50, y: 8 }, 4)).toBe(false);
     expect(hitStroke({ ...stroke, points: [points[0]] }, { x: 1, y: 1 }, 2)).toBe(true);
     expect(segmentDistance({ x: 3, y: 4 }, points[0], points[0])).toBe(5);
+  });
+});
+describe('document IDs', () => {
+  it('also works in non-secure local device testing without randomUUID', () => {
+    const getRandomValues = crypto.getRandomValues.bind(crypto);
+    vi.stubGlobal('crypto', { getRandomValues });
+    try {
+      expect(newId()).toMatch(/^[0-9a-f]{32}$/);
+      expect(newId()).not.toBe(newId());
+    } finally { vi.unstubAllGlobals(); }
   });
 });
 describe('untrusted drawing imports', () => {
