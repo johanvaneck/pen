@@ -36,7 +36,7 @@ Repository: https://github.com/johanvaneck/pen
 
 Pushes to `main` run unit tests, type checking, a production build, and Chromium interaction tests. Only a successful build deploys the `dist/` artifact to GitHub Pages. Pull requests run the same checks without deployment.
 
-- GitHub Pages: Actions source, custom domain `pen.v3ck.com`. After deployment, a separate Actions job waits up to an hour for GitHub's TLS certificate and enforces HTTPS automatically. It fails visibly if certificate issuance does not finish in that time.
+- GitHub Pages: Actions source, custom domain `pen.v3ck.com`. GitHub manages the TLS certificate. HTTPS enforcement is enabled in the Pages settings once the certificate is issued; the deployment workflow does not attempt administrative settings changes.
 - Cloudflare: DNS-only CNAME `pen` → `johanvaneck.github.io`. DNS-only lets GitHub issue and renew its TLS certificate directly; traffic is served by GitHub Pages, not Netcup.
 - `public/CNAME` preserves the domain in the output. All app URLs use the domain root.
 - No server, Docker, Dokploy, or secret credentials are needed in the repository or CI.
